@@ -63,22 +63,23 @@ namespace AntKiller
             AntBuilder.toBeRemoved = new List<Object>();
             AntBuilder.toBeAdded = new List<Object>();
 
-            this.time = 0.0f;
-            this.antKiller = (AntKiller)win;
-            this.antKiller.SceneCreating += new OgreWindow.SceneEventHandler(win_SceneCreating);
+            time = 0.0f;
+            antKiller = (AntKiller)win;
+            antKiller.SceneCreating += new OgreWindow.SceneEventHandler(win_SceneCreating);
         }
 
         void win_SceneCreating(OgreWindow win)
         {
-            this.antKiller.Root.FrameStarted += new FrameListener.FrameStartedHandler(Root_FrameStarted);
+            antKiller.Root.FrameStarted += new FrameListener.FrameStartedHandler(Root_FrameStarted);
 
-            win.SceneManager.SetSkyDome(true, "Examples/CloudySky", 5, 8);
+            //win.SceneManager.SetSkyDome(true, "Examples/CloudySky", 5, 8);
             win.SceneManager.SetWorldGeometry("terrain.cfg");
 
-            this.createAnts(win);
-            //this.antKiller.Camera.Pitch(new Degree(-35).ValueRadians);
+            createAnts(win);
+            antKiller.Camera.Position = antKiller.Camera.Orientation * new Vector3(Options.screenX * 0.5f, 1500, Options.screenZ * 0.5f);
+            antKiller.Camera.Pitch(new Degree(-90).ValueRadians);
 
-            this.intersectionSceneQuery = win.SceneManager.CreateIntersectionQuery();
+            intersectionSceneQuery = win.SceneManager.CreateIntersectionQuery();
         }
 
         bool Root_FrameStarted(FrameEvent evt)
@@ -124,12 +125,12 @@ namespace AntKiller
                     AntBuilder.ToBeRemoved.Remove(obj);
                 }
 
-                this.time += evt.timeSinceLastFrame;
+                time += evt.timeSinceLastFrame;
             }
 
-            this.CheckCollision();
+            CheckCollision();
 
-            AntBuilder.TextWriter.setText("Time", "Time: " + (int)this.time + (AntBuilder.Pause ? " (Paused)" : "") + (AntBuilder.Attacking ? "" : " (Attack Off)"));
+            AntBuilder.TextWriter.setText("Time", "Time: " + (int)time + (AntBuilder.Pause ? " (Paused)" : "") + (AntBuilder.Attacking ? "" : " (Attack Off)"));
 
             return true;
         }
@@ -163,7 +164,7 @@ namespace AntKiller
 
         private void CheckCollision()
         {
-            IntersectionSceneQueryResult result = this.intersectionSceneQuery.Execute();
+            IntersectionSceneQueryResult result = intersectionSceneQuery.Execute();
 
             SceneQueryMovableIntersectionList list = result.movables2movables;
             IEnumerator<Pair<MovableObject, MovableObject>> iter = list.GetEnumerator();
@@ -186,79 +187,78 @@ namespace AntKiller
                 // Did we find both Objects?
                 if (first != null && second != null)
                 {
-                    // First Type is Food
-                    if (first.GetType() == typeof(Food))
+                    // Did we find food?
+                    if (first.GetType() == typeof(Food) ||
+                        second.GetType() == typeof(Food))
                     {
-                        Food food = (Food)first;
-
+                        if (first.GetType() == typeof(Ant))
+                        {
+                            FoundFood(first as Ant, second as Food);
+                        }
                         if (second.GetType() == typeof(Ant))
                         {
-                            Ant ant = (Ant)second;
-                            // Found Food
-                            if (ant.CurrentState.GetType() != typeof(HomeState))
-                            {
-                                food.Amount--;
-                                if (food.Amount > 0)
-                                {
-                                    if (ant.CurrentState.GetType() == typeof(SearchState) || ant.CurrentState.GetType() == typeof(BackState))
-                                        ant.CurrentState = new HomeState(ant, new Mission(MissionType.FOOD_FOUND, food.SceneNode.Position));
-                                    else
-                                        ant.CurrentState = new HomeState(ant, new Mission(MissionType.FOOD_RETURN, food.SceneNode.Position));
-                                }
-                                else
-                                    ant.CurrentState = new HomeState(ant, new Mission(MissionType.FOOD_EMPTY, food.SceneNode.Position));
-                            }
+                            FoundFood(second as Ant, first as Food);
                         }
                     }
 
-                    // Second Type is Ant
-                    if (first.GetType() == typeof(Ant))
+                    // Is there interaction between Ants?
+                    if (first.GetType() == typeof(Ant) &&
+                        second.GetType() == typeof(Ant))
                     {
-                        Ant ant = (Ant)first;
-                        if (second.GetType() == typeof(Food))
-                        {
-                            Food food = (Food)second;
-                            // Found Food!
-                            if (ant.CurrentState.GetType() != typeof(HomeState))
-                            {
-                                food.Amount--;
-                                if (food.Amount > 0)
-                                {
-                                    if (ant.CurrentState.GetType() == typeof(SearchState) || ant.CurrentState.GetType() == typeof(BackState))
-                                        ant.CurrentState = new HomeState(ant, new Mission(MissionType.FOOD_FOUND, food.SceneNode.Position));
-                                    else
-                                        ant.CurrentState = new HomeState(ant, new Mission(MissionType.FOOD_RETURN, food.SceneNode.Position));
-                                }
-                                else if (food.Amount == 0)
-                                    ant.CurrentState = new HomeState(ant, new Mission(MissionType.LAST_FOOD, food.SceneNode.Position));
-                                else
-                                    ant.CurrentState = new HomeState(ant, new Mission(MissionType.FOOD_EMPTY, food.SceneNode.Position));
-                            }
-                        }
-                        else if (second.GetType() == typeof(Ant))
-                        {
-                            Ant partner = second as Ant;
-                            AntsInteraction(ant, partner, ant.Colony.Name == partner.Colony.Name);
-                        }
+                        AntsInteract(first as Ant, second as Ant);
                     }
                 }
             }
         }
 
-        private void AntsInteraction(Ant first, Ant second, bool friendly)
+        private void FoundFood(Ant ant, Food food)
         {
-            if (friendly)
+            if (ant.CurrentState.GetType() != typeof(HomeState))
+            {
+                food.Amount--;
+                if (food.Amount > 0)
+                {
+                    if (ant.CurrentState.GetType() == typeof(SearchState) ||
+                        ant.CurrentState.GetType() == typeof(BackState))
+                    {
+                        ant.CurrentState = new HomeState(ant,
+                            new Mission(MissionType.FOOD_FOUND, food.SceneNode.Position));
+                    }
+                    else
+                    {
+                        ant.CurrentState = new HomeState(ant,
+                            new Mission(MissionType.FOOD_RETURN, food.SceneNode.Position));
+                    }
+                }
+                else if (food.Amount == 0)
+                {
+                    ant.CurrentState = new HomeState(ant,
+                        new Mission(MissionType.LAST_FOOD, food.SceneNode.Position));
+                }
+                else
+                {
+                    ant.CurrentState = new HomeState(ant,
+                        new Mission(MissionType.FOOD_EMPTY, food.SceneNode.Position));
+                }
+            }
+        }
+
+        private void AntsInteract(Ant first, Ant second)
+        {
+            if (first.Colony == second.Colony)
             {
                 //Console.WriteLine("Friendly Interaction {0}, {1}", first.CurrentState.GetType().Name, second.CurrentState.GetType().Name);
-                if (first.CurrentState.GetType() == typeof(HomeState) &&
-                    second.CurrentState.GetType() == typeof(FoodState))
-                {
-                    DelayHomeToFoodMessage(first, second);
-                }
-                else if (first.CurrentState.GetType() == typeof(FoodState) &&
+                if (first.CurrentState.GetType() == typeof(HomeState) ||
                     second.CurrentState.GetType() == typeof(HomeState))
                 {
-                    DelayHomeToFoodMessage(second, first);
+                    if(first.CurrentState.GetType() == typeof(FoodState))
+                    {
+                        ExchangeFoodMessage(second, first);
+                    }
+                    if(second.CurrentState.GetType() == typeof(FoodState))
+                    {
+                        ExchangeFoodMessage(first, second);
+                    }
                 }
             }
             else if (AntBuilder.Attacking)
@@ -279,11 +279,11 @@ namespace AntKiller
             }
         }
 
-        private void DelayHomeToFoodMessage(Ant home, Ant food)
+        private void ExchangeFoodMessage(Ant home, Ant food)
         {
-            Mission firstMission = (home.CurrentState as HomeState).Mission;
-            if (firstMission.MissionType == MissionType.FOOD_EMPTY ||
-                firstMission.MissionType == MissionType.LAST_FOOD)
+            Mission mission = (home.CurrentState as HomeState).Mission;
+            if (mission.MissionType == MissionType.FOOD_EMPTY ||
+                mission.MissionType == MissionType.LAST_FOOD)
             {
                 food.CurrentState = new HomeState(food, new Mission(MissionType.FOOD_EMPTY, food.CurrentState.Destination));
             }

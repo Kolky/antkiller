@@ -29,63 +29,65 @@ namespace AntKiller
 
         public AntInput(OgreWindow win)
         {
-            this.mWindow = win;
+            mWindow = win;
 
-            this.mWindow.KeyDown += new KeyEventHandler(HandleKeyDown);
-            this.mWindow.KeyUp += new KeyEventHandler(HandleKeyUp);
-            this.mWindow.MouseDown += new MouseEventHandler(HandleMouseDown);
-            this.mWindow.MouseUp += new MouseEventHandler(HandleMouseUp);
-            this.mWindow.Disposed += new EventHandler(win_Disposed);
-            this.mWindow.LostFocus += new EventHandler(win_LostFocus);
-            this.mWindow.GotFocus += new EventHandler(win_GotFocus);
+            mWindow.KeyDown += new KeyEventHandler(HandleKeyDown);
+            mWindow.KeyUp += new KeyEventHandler(HandleKeyUp);
+            mWindow.MouseDown += new MouseEventHandler(HandleMouseDown);
+            mWindow.MouseUp += new MouseEventHandler(HandleMouseUp);
+            mWindow.Disposed += new EventHandler(win_Disposed);
+            mWindow.LostFocus += new EventHandler(win_LostFocus);
+            mWindow.GotFocus += new EventHandler(win_GotFocus);
 
-            this.mTimer = new System.Windows.Forms.Timer();
-            this.mTimer.Interval = INTERVAL;
-            this.mTimer.Enabled = true;
-            this.mTimer.Tick += new EventHandler(Timer_Tick);
+            mTimer = new System.Windows.Forms.Timer();
+            mTimer.Interval = INTERVAL;
+            mTimer.Enabled = true;
+            mTimer.Tick += new EventHandler(Timer_Tick);
         }
 
         #region Event Handlers
         void win_Disposed(object sender, EventArgs e)
         {
-            this.mTimer.Enabled = false;
+            mTimer.Enabled = false;
         }
 
         void win_GotFocus(object sender, EventArgs e)
         {
-            this.mTimer.Enabled = true;
+            mTimer.Enabled = true;
         }
 
         void win_LostFocus(object sender, EventArgs e)
         {
-            this.mTimer.Enabled = false;
-            this.mTranslate = Vector3.ZERO;
+            mTimer.Enabled = false;
+            mTranslate = Vector3.ZERO;
         }
 
         void Timer_Tick(object sender, EventArgs e)
         {
-            if (this.mLastFocus)
+            if (mLastFocus)
             {
                 // Perform the movement
                 Point delta = Cursor.Position;
                 delta.X -= mLastLocation.X;
                 delta.Y -= mLastLocation.Y;
-                this.HandleMouseMove(delta);
+                HandleMouseMove(delta);
             }
 
-            this.mLastLocation = Cursor.Position;
-            this.mLastFocus = this.mWindow.Focused;
+            mLastLocation = Cursor.Position;
+            mLastFocus = mWindow.Focused;
 
-            if (this.mLastFocus)
-                this.mWindow.Camera.Position += this.mWindow.Camera.Orientation * this.mTranslate;
+            if (mLastFocus)
+            {
+                mWindow.Camera.Position += mWindow.Camera.Orientation * mTranslate;
+            }
         }
 
         private void HandleMouseMove(Point delta)
         {
-            if (this.mRotating)
+            if (mRotating)
             {
-                this.mWindow.Camera.Yaw(new Degree(delta.X * this.mRot));
-                this.mWindow.Camera.Pitch(new Degree(delta.Y * this.mRot));
+                mWindow.Camera.Yaw(new Degree(delta.X * mRot));
+                mWindow.Camera.Pitch(new Degree(delta.Y * mRot));
             }
         }
 
@@ -104,62 +106,62 @@ namespace AntKiller
                 case Keys.W:
                 case Keys.Down:
                 case Keys.S:
-                    this.mTranslate.z = 0;
+                    mTranslate.z = 0;
                     break;
 
                 case Keys.Left:
                 case Keys.A:
                 case Keys.Right:
                 case Keys.D:
-                    this.mTranslate.x = 0;
+                    mTranslate.x = 0;
                     break;
 
                 case Keys.PageUp:
                 case Keys.Q:
                 case Keys.PageDown:
                 case Keys.E:
-                    this.mTranslate.y = 0;
+                    mTranslate.y = 0;
                     break;
 
                 case Keys.Escape:
-                    this.mWindow.Close();
+                    mWindow.Close();
                     break;
             }
         }
 
         protected virtual void HandleKeyDown(object sender, KeyEventArgs e)
         {
-            float amount = this.mTrans;
+            float amount = mTrans;
             switch (e.KeyCode)
             {
                 case Keys.Up:
                 case Keys.W:
-                    this.mTranslate.z = -amount;
+                    mTranslate.z = -amount;
                     break;
 
                 case Keys.Down:
                 case Keys.S:
-                    this.mTranslate.z = amount;
+                    mTranslate.z = amount;
                     break;
 
                 case Keys.Left:
                 case Keys.A:
-                    this.mTranslate.x = -amount;
+                    mTranslate.x = -amount;
                     break;
 
                 case Keys.Right:
                 case Keys.D:
-                    this.mTranslate.x = amount;
+                    mTranslate.x = amount;
                     break;
 
                 case Keys.PageUp:
                 case Keys.Q:
-                    this.mTranslate.y = amount;
+                    mTranslate.y = amount;
                     break;
 
                 case Keys.PageDown:
                 case Keys.E:
-                    this.mTranslate.y = -amount;
+                    mTranslate.y = -amount;
                     break;
             }
         }
@@ -169,7 +171,7 @@ namespace AntKiller
             if (e.Button == MouseButtons.Right)
             {
                 Cursor.Show();
-                this.mRotating = false;
+                mRotating = false;
             }
         }
 
@@ -178,7 +180,7 @@ namespace AntKiller
             if (e.Button == MouseButtons.Right)
             {
                 Cursor.Hide();
-                this.mRotating = true;
+                mRotating = true;
             }
         }
         #endregion

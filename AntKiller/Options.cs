@@ -37,6 +37,16 @@ namespace AntKiller
         // Random
         public static Random random = new Random();
 
+        // Map
+        public const int screenX = 1600;
+        public const int screenZ = 1200;
+
+        public const int minScreenX = 20;
+        public const int maxScreenX = 1580;
+
+        public const int minScreenZ = 20;
+        public const int maxScreenZ = 1180;
+
         public static int force(int value, int min, int max)
         {
             if (value < min)
@@ -48,7 +58,10 @@ namespace AntKiller
         }
         public static Vector3 randomPoint()
         {
-            return new Vector3(Options.random.Next(20, 1480), 0, Options.random.Next(20, 1480));
+            return new Vector3(
+                Options.random.Next(minScreenX, maxScreenX),
+                0,
+                Options.random.Next(minScreenZ, maxScreenZ));
         }
         public static String capital(String str)
         {
