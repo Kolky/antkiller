@@ -9,7 +9,7 @@ namespace AntKiller
     class BackState : State
     {
         public BackState(Ant ant)
-            : base(ant)
+            : base(ant, Options.returnSpeed)
         {
             Destination = Ant.Colony.Home;
 

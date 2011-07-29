@@ -11,11 +11,13 @@ namespace AntKiller
         #region Properties
         public Ant Ant { get; private set; }
         public Vector3 Destination { get; protected set; }
+        public float Speed { get; protected set; }
         #endregion
 
-        public State(Ant ant)
+        public State(Ant ant, float speed)
         {
             Ant = ant;
+            Speed = speed;
         }
 
         public abstract void Update(FrameEvent evt);

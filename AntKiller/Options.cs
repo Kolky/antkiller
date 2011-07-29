@@ -8,8 +8,8 @@ namespace AntKiller
     class Options
     {
         // Start amount 
-        public const int antsPerSide = 10;
-        public const int foodPieces = 20;
+        public const int antsPerSide = 5;
+        public const int foodPieces = 18;
 
         // Map
         public const int screenX = 1600;
@@ -26,13 +26,18 @@ namespace AntKiller
         // Food
         public const int foodMin = 10;
         public const int foodMax = 15;
-        public const int foodPerAntNeed = 3;
-        public const int foodPerAntUsed = 1;
+        public const float foodPerAntNeed = 3;
+        public const float foodPerAntUsed = 0.2f;
         public const float secondsPerFood = 30.0f;
 
         // Ant
         public const float getFoodPercentage = 0.6f;
+
+        public const float returnSpeed = 80.0f;
+        public const float searchSpeed = 75.0f;
         public const float walkSpeed = 70.0f;
+        public const float carrySpeed = 50.0f;
+
         public const int health = 30;
         public const double healthRankBonus = 10;
         public const int damagePerRank = 3;

@@ -233,23 +233,23 @@ namespace AntKiller
                         ant.CurrentState.GetType() == typeof(BackState))
                     {
                         ant.CurrentState = new HomeState(ant,
-                            new Mission(MissionType.FOOD_FOUND, food.SceneNode.Position));
+                            new Mission(MissionType.FOOD_FOUND, food.Name, food.SceneNode.Position));
                     }
                     else
                     {
                         ant.CurrentState = new HomeState(ant,
-                            new Mission(MissionType.FOOD_RETURN, food.SceneNode.Position));
+                            new Mission(MissionType.FOOD_RETURN, food.Name, food.SceneNode.Position));
                     }
                 }
                 else if (food.Amount == 0)
                 {
                     ant.CurrentState = new HomeState(ant,
-                        new Mission(MissionType.LAST_FOOD, food.SceneNode.Position));
+                        new Mission(MissionType.LAST_FOOD, food.Name, food.SceneNode.Position));
                 }
                 else
                 {
                     ant.CurrentState = new HomeState(ant,
-                        new Mission(MissionType.FOOD_EMPTY, food.SceneNode.Position));
+                        new Mission(MissionType.FOOD_EMPTY, food.Name, food.SceneNode.Position));
                 }
             }
         }
@@ -293,12 +293,13 @@ namespace AntKiller
         private void ExchangeFoodMessage(Ant home, Ant food)
         {
             Mission mission = (home.CurrentState as HomeState).Mission;
+            FoodState foodAntState = food.CurrentState as FoodState;
             if ((mission.MissionType == MissionType.FOOD_EMPTY ||
                 mission.MissionType == MissionType.LAST_FOOD) &&
-                food.CurrentState.Destination == mission.Position)
+                mission.ObjectName == foodAntState.ObjectName)
             {
-                Console.WriteLine(home.Name + " to " + food.Name + ": 'food is gone'!");
-                food.CurrentState = new HomeState(food, new Mission(MissionType.FOOD_EMPTY, food.SceneNode.Position));
+                //Console.WriteLine(home.Name + " to " + food.Name + ": 'food is gone'!");
+                food.CurrentState = new HomeState(food, new Mission(MissionType.FOOD_EMPTY, foodAntState.ObjectName, food.SceneNode.Position));
             }
         }
     }

@@ -13,7 +13,7 @@ namespace AntKiller
         #endregion
 
         public AttackState(Ant ant, Ant enemy)
-            : base(ant)
+            : base(ant, 0)
         {
             Enemy = enemy;
 

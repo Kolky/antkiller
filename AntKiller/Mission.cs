@@ -21,17 +21,19 @@ namespace AntKiller
         #region Properties
         public MissionType MissionType { get; private set; }
         public Vector3 Position { get; private set; }
+        public string ObjectName { get; private set; }
         #endregion
 
         public Mission(MissionType missionType)
-            : this(missionType, Vector3.ZERO)
+            : this(missionType, null, Vector3.ZERO)
         {
         }
 
-        public Mission(MissionType missionType, Vector3 position)
+        public Mission(MissionType missionType, string objectName, Vector3 position)
         {
             MissionType = missionType;
             Position = position;
+            ObjectName = objectName;
         }
     }
 }

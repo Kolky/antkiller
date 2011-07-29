@@ -13,7 +13,7 @@ namespace AntKiller
         #endregion
 
         public SearchState(Ant ant)
-            : base(ant)
+            : base(ant, Options.searchSpeed)
         {
             Destination = randomDestination(Ant.SceneNode);
 

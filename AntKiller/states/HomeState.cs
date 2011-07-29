@@ -12,8 +12,26 @@ namespace AntKiller
         public Mission Mission { get; private set; }
         #endregion
 
+        private static float GetMissionSpeed(MissionType missionType)
+        {
+            switch (missionType)
+            {
+                case MissionType.ENEMY_KILLED:
+                    return Options.returnSpeed;
+                case MissionType.FOOD_FOUND:
+                case MissionType.FOOD_RETURN:
+                case MissionType.LAST_FOOD:
+                    return Options.carrySpeed;
+                case MissionType.NOTHING_FOUND:
+                case MissionType.FOOD_EMPTY:
+                    return Options.walkSpeed;
+                default:
+                    return 0;
+            }
+        }
+
         public HomeState(Ant ant, Mission mission)
-            : base(ant)
+            : base(ant, GetMissionSpeed(mission.MissionType))
         {
             Mission = mission;
 
@@ -67,23 +85,21 @@ namespace AntKiller
                     case MissionType.NOTHING_FOUND:
                         break;
                     case MissionType.FOOD_FOUND:
-                        if (!Ant.Colony.FoodStacks.Contains(Mission.Position))
-                            Ant.Colony.FoodStacks.Add(Mission.Position);
+                        if (!Ant.Colony.FoodStacks.ContainsKey(Mission.ObjectName))
+                        {
+                            Ant.Colony.FoodStacks.Add(Mission.ObjectName, Mission.Position);
+                        }
                         Ant.Colony.Stock++;
                         break;
                     case MissionType.FOOD_RETURN:
-                        Ant.Colony.Foodcheck--;
                         Ant.Colony.Stock++;
                         break;
                     case MissionType.LAST_FOOD:
-                        if (Ant.Colony.FoodStacks.Contains(Mission.Position))
-                            Ant.Colony.FoodStacks.Remove(Mission.Position);
-                        Ant.Colony.Foodcheck--;
-                        break;
                     case MissionType.FOOD_EMPTY:
-                        if (Ant.Colony.FoodStacks.Contains(Mission.Position))
-                            Ant.Colony.FoodStacks.Remove(Mission.Position);
-                        Ant.Colony.Foodcheck--;
+                        if (Ant.Colony.FoodStacks.ContainsKey(Mission.ObjectName))
+                        {
+                            Ant.Colony.FoodStacks.Remove(Mission.ObjectName);
+                        }
                         break;
                 }
 

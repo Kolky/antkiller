@@ -182,13 +182,13 @@ namespace AntKiller
             }
             else
             {
-                mDistance -= Options.walkSpeed * evt.timeSinceLastFrame;
+                mDistance -= CurrentState.Speed * evt.timeSinceLastFrame;
 
                 if (mDistance <= 0.0f)
                     mDirection = Vector3.ZERO;
                 else
                 {
-                    Vector3 translate = (mDirection * Options.walkSpeed * evt.timeSinceLastFrame);
+                    Vector3 translate = (mDirection * CurrentState.Speed * evt.timeSinceLastFrame);
                     // supress y movement
                     translate.y = 0;
                     SceneNode.Translate(translate);

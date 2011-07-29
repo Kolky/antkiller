@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
@@ -35,8 +36,7 @@ namespace AntKiller
             }
         }
 
-        public int Foodcheck { get; set; }
-        public List<Vector3> FoodStacks { get; private set; }
+        public Dictionary<string, Vector3> FoodStacks { get; private set; }
         #endregion
 
         public Colony(OgreWindow win, SceneNode sceneNode, AntColor color, Vector3 home)
@@ -46,8 +46,8 @@ namespace AntKiller
             Color = color;
             Name = "Colony" + Options.capital(Color.ToString());
             Home = home;
-            stock = Options.antsPerSide * Options.foodPerAntNeed;
-            FoodStacks = new List<Vector3>();
+            stock = Options.antsPerSide;
+            FoodStacks = new Dictionary<string, Vector3>();
 
             Entity = win.SceneManager.CreateEntity(Name, "sphere.mesh");
             Entity.SetMaterialName("SphereBlack");
@@ -59,36 +59,20 @@ namespace AntKiller
         {
             if (FoodStacks.Count > 0)
             {
-                Vector3 closestFoodStack = Vector3.ZERO;
-                float checkDistance = 0f;
-
-                foreach (Vector3 vector in FoodStacks)
-                {
-                    if (checkDistance == 0f)
-                    {
-                        Vector3 temp = Home - vector;
-                        temp.y = 0;
-                        checkDistance = temp.Normalise();
-                        closestFoodStack = vector;
-                    }
-                    else
-                    {
-                        Vector3 temp = Home - vector;
-                        temp.y = 0;
-                        float tempDistance = temp.Normalise();
-                        if (tempDistance < checkDistance)
-                        {
-                            checkDistance = tempDistance;
-                            closestFoodStack = vector;
-                        }
-                    }
-                }
+                var closestFoodStack = FoodStacks
+                    .OrderBy(x => new Vector3(Home.x - x.Value.x, 0, Home.z - x.Value.z).Normalise())
+                    .First();
 
                 // Not everyone should get food, always people need to search
-                if (Foodcheck < (int)System.Math.Ceiling(counter * Options.getFoodPercentage))
+
+                int gatheringAnts = AntBuilder.Objects
+                    .Where(x => x.GetType() == typeof(Ant))
+                    .Cast<Ant>()
+                    .Where(x => x.Colony == this && x.CurrentState.GetType() == typeof(FoodState))
+                    .Count();
+                if (gatheringAnts < (int)System.Math.Ceiling(counter * Options.getFoodPercentage))
                 {
-                    Foodcheck++;
-                    return new FoodState(ant, closestFoodStack);
+                    return new FoodState(ant, closestFoodStack.Key, closestFoodStack.Value);
                 }
                 else
                 {
@@ -110,28 +94,25 @@ namespace AntKiller
                 AntBuilder.ToBeAdded.Add(new Ant(Win, Win.SceneManager.RootSceneNode.CreateChildSceneNode(), this));
             }
 
-            /*
+            //*
             if (Stock > 0 && events >= Options.secondsPerFood)
             {
-              Stock -= Counter * Options.foodPerAntUsed;
-              events = 0;
+                Stock -= (int)(Counter * Options.foodPerAntUsed);
+                events = 0;
             }
 
             if (Stock <= 0)
             {
-              foreach (Object obj in AntBuilder.Objects)
-              {
-                if (obj.GetType() == typeof(Ant))
+                foreach (Ant ant in AntBuilder.Objects.Where(x => x.GetType() == typeof(Ant)).Cast<Ant>())
                 {
-                  if (((Ant)obj).Colony.Name == Name)
-                  {
-                    ((Ant)obj).Health -= Options.random.Next(1, ((Ant)obj).Rank);
-                  }
+                    if (ant.Colony.Name == Name)
+                    {
+                        ant.Health -= Options.random.Next(1, ant.Rank);
+                    }
                 }
-              }
-              Console.WriteLine(Name + " is low on stock and ants are losing health");
+                Console.WriteLine(Name + " is low on stock and ants are losing health");
             }
-            */
+            //*/
 
             events += evt.timeSinceLastFrame;
             base.Update(evt);

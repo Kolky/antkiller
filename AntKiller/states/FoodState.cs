@@ -8,9 +8,12 @@ namespace AntKiller
 {
     class FoodState : State
     {
-        public FoodState(Ant ant, Vector3 destination)
-            : base(ant)
+        public string ObjectName { get; private set; }
+
+        public FoodState(Ant ant, string objectName, Vector3 destination)
+            : base(ant, Options.walkSpeed)
         {
+            ObjectName = objectName;
             Ant.resetMovement();
             Destination = destination;
 
@@ -32,7 +35,7 @@ namespace AntKiller
 
             if (distance <= 0.0f)
             {
-                Ant.CurrentState = new HomeState(Ant, new Mission(MissionType.FOOD_EMPTY, Destination));
+                Ant.CurrentState = new HomeState(Ant, new Mission(MissionType.FOOD_EMPTY, ObjectName, Destination));
             }
         }
     }

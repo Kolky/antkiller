@@ -9,7 +9,7 @@ namespace AntKiller
     class ExplodeState : State
     {
         public ExplodeState(Ant ant)
-            : base(ant)
+            : base(ant, 0)
         {
             if (Ant.CurrentAnimation != AntAnimations.EXPLODE || 
                 Ant.CurrentAnimationState == null ||
