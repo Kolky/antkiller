@@ -9,12 +9,12 @@ namespace AntKiller
     {
         // Start amount 
         public const int antsPerSide = 10;
-        public const int foodPieces = 50;
+        public const int foodPieces = 20;
 
         // Map
-        public const int screenX = 3200;
-        public const int screenZ = 2400;
-        public const int cameraY = 3000;
+        public const int screenX = 1600;
+        public const int screenZ = 1200;
+        public const int cameraY = 1500;
 
         // Object
         public static int counter = 1;
@@ -38,7 +38,7 @@ namespace AntKiller
         public const int damagePerRank = 3;
 
         // SearchState
-        public const int pointSpread = 500;
+        public const int pointSpread = 700;
 
         // Random
         public static Random random = new Random();

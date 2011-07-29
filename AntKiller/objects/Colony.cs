@@ -91,10 +91,14 @@ namespace AntKiller
                     return new FoodState(ant, closestFoodStack);
                 }
                 else
+                {
                     return new SearchState(ant);
+                }
             }
             else
+            {
                 return new SearchState(ant);
+            }
         }
 
         private float events = 0;

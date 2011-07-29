@@ -37,7 +37,7 @@ namespace AntKiller
             if (Enemy.Health <= 0)
             {
                 Ant.Rank++;
-                Ant.CurrentState = new HomeState(Enemy, new Mission(MissionType.ENEMY_KILLED));
+                Ant.CurrentState = new HomeState(Ant, new Mission(MissionType.ENEMY_KILLED));
             }
         }
     }

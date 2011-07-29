@@ -293,10 +293,12 @@ namespace AntKiller
         private void ExchangeFoodMessage(Ant home, Ant food)
         {
             Mission mission = (home.CurrentState as HomeState).Mission;
-            if (mission.MissionType == MissionType.FOOD_EMPTY ||
-                mission.MissionType == MissionType.LAST_FOOD)
+            if ((mission.MissionType == MissionType.FOOD_EMPTY ||
+                mission.MissionType == MissionType.LAST_FOOD) &&
+                food.CurrentState.Destination == mission.Position)
             {
-                food.CurrentState = new HomeState(food, new Mission(MissionType.FOOD_EMPTY, food.CurrentState.Destination));
+                Console.WriteLine(home.Name + " to " + food.Name + ": 'food is gone'!");
+                food.CurrentState = new HomeState(food, new Mission(MissionType.FOOD_EMPTY, food.SceneNode.Position));
             }
         }
     }

@@ -20,7 +20,7 @@ namespace AntKiller
                 Ant.startAnimation(AntAnimations.WALK, true);
             }
 
-            Ant.Sphere.SetMaterialName("SphereOrange");
+            Ant.Sphere.SetMaterialName("SpherePink");
 
             //Console.WriteLine(Ant.Name + " BackState");
         }
