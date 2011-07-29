@@ -76,7 +76,8 @@ namespace AntKiller
             win.SceneManager.SetWorldGeometry("terrain.cfg");
 
             createAnts(win);
-            antKiller.Camera.Position = antKiller.Camera.Orientation * new Vector3(Options.screenX * 0.5f, 1500, Options.screenZ * 0.5f);
+            antKiller.Camera.Position = antKiller.Camera.Orientation *
+                new Vector3(Options.screenX * 0.5f, Options.cameraY, Options.screenZ * 0.5f);
             antKiller.Camera.Pitch(new Degree(-90).ValueRadians);
 
             intersectionSceneQuery = win.SceneManager.CreateIntersectionQuery();
@@ -137,27 +138,37 @@ namespace AntKiller
 
         void createAnts(OgreWindow win)
         {
-            Colony colony1 = new Colony(win, win.SceneManager.RootSceneNode.CreateChildSceneNode(), AntColor.BLACK, new Vector3(500, 0, 500));
-            Colony colony2 = new Colony(win, win.SceneManager.RootSceneNode.CreateChildSceneNode(), AntColor.RED, new Vector3(1000, 0, 1000));
-
             AntBuilder.textWriter = new TextWriter(win);
+
+            Colony colony1 = new Colony(
+                win,
+                win.SceneManager.RootSceneNode.CreateChildSceneNode(),
+                AntColor.BLACK,
+                new Vector3(Options.screenX * 0.25f, 0, Options.screenZ * 0.25f));
+            AntBuilder.Objects.Add(colony1);
 
             AntBuilder.TextWriter.addTextBox(colony1.Name + "Stock", "Stock: " + colony1.Stock, 10, 10, 200, 20, new ColourValue(0.6f, 0.6f, 0.6f));
             AntBuilder.TextWriter.addTextBox(colony1.Name + "Ants", "Ants: " + colony1.Counter, 210, 10, 200, 20, new ColourValue(0.6f, 0.6f, 0.6f));
 
+            Colony colony2 = new Colony(
+                win,
+                win.SceneManager.RootSceneNode.CreateChildSceneNode(),
+                AntColor.RED,
+                new Vector3(Options.screenX * 0.75f, 0, Options.screenZ * 0.75f));
+            AntBuilder.Objects.Add(colony2);
+
             AntBuilder.TextWriter.addTextBox(colony2.Name + "Stock", "Stock: " + colony2.Stock, 10, 30, 200, 20, new ColourValue(1, 0, 0));
             AntBuilder.TextWriter.addTextBox(colony2.Name + "Ants", "Ants: " + colony2.Counter, 210, 30, 200, 20, new ColourValue(1, 0, 0));
 
-            AntBuilder.Objects.Add(colony1);
-            AntBuilder.Objects.Add(colony2);
-
             for (int i = 0; i < Options.antsPerSide; i++)
+            {
                 AntBuilder.Objects.Add(new Ant(win, win.SceneManager.RootSceneNode.CreateChildSceneNode(), colony1));
-            for (int i = 0; i < Options.antsPerSide; i++)
                 AntBuilder.Objects.Add(new Ant(win, win.SceneManager.RootSceneNode.CreateChildSceneNode(), colony2));
-
+            }
             for (int i = 0; i < Options.foodPieces; i++)
+            {
                 AntBuilder.Objects.Add(new Food(win, win.SceneManager.RootSceneNode.CreateChildSceneNode(), Options.randomPoint()));
+            }
 
             AntBuilder.TextWriter.addTextBox("Time", "Time: 0", 10, 50, 200, 20, new ColourValue(0, 0, 1));
         }

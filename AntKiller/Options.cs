@@ -9,14 +9,19 @@ namespace AntKiller
     {
         // Start amount 
         public const int antsPerSide = 10;
-        public const int foodPieces = 20;
+        public const int foodPieces = 50;
+
+        // Map
+        public const int screenX = 3200;
+        public const int screenZ = 2400;
+        public const int cameraY = 3000;
 
         // Object
         public static int counter = 1;
-        public const float minX = 20f;
-        public const float maxX = 1480f;
-        public const float minZ = 20f;
-        public const float maxZ = 1480f;
+        public const int minX = 20;
+        public const int maxX = screenX - minX;
+        public const int minZ = 20;
+        public const int maxZ = screenZ - minZ;
 
         // Food
         public const int foodMin = 10;
@@ -30,22 +35,13 @@ namespace AntKiller
         public const float walkSpeed = 70.0f;
         public const int health = 30;
         public const double healthRankBonus = 10;
+        public const int damagePerRank = 3;
 
         // SearchState
         public const int pointSpread = 500;
 
         // Random
         public static Random random = new Random();
-
-        // Map
-        public const int screenX = 1600;
-        public const int screenZ = 1200;
-
-        public const int minScreenX = 20;
-        public const int maxScreenX = 1580;
-
-        public const int minScreenZ = 20;
-        public const int maxScreenZ = 1180;
 
         public static int force(int value, int min, int max)
         {
@@ -59,9 +55,9 @@ namespace AntKiller
         public static Vector3 randomPoint()
         {
             return new Vector3(
-                Options.random.Next(minScreenX, maxScreenX),
+                Options.random.Next(minX, maxX),
                 0,
-                Options.random.Next(minScreenZ, maxScreenZ));
+                Options.random.Next(minZ, maxZ));
         }
         public static String capital(String str)
         {

@@ -83,7 +83,9 @@ namespace AntKiller
             }
 
             if (Health <= 0 && CurrentState.GetType() != typeof(ExplodeState))
+            {
                 CurrentState = new ExplodeState(this);
+            }
 
             base.Update(evt);
         }

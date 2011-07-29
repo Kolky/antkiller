@@ -52,11 +52,11 @@ namespace AntKiller
         private Vector3 randomDestination(SceneNode sceneNode)
         {
             int x = Options.random.Next(
-              Options.force((int)(sceneNode.Position.x - Options.pointSpread), Options.minScreenX, Options.maxScreenX),
-              Options.force((int)(sceneNode.Position.x + Options.pointSpread), Options.minScreenX, Options.maxScreenX));
+              Options.force((int)(sceneNode.Position.x - Options.pointSpread), Options.minX, Options.maxX),
+              Options.force((int)(sceneNode.Position.x + Options.pointSpread), Options.minX, Options.maxX));
             int z = Options.random.Next(
-              Options.force((int)(sceneNode.Position.z - Options.pointSpread), Options.minScreenZ, Options.maxScreenZ),
-              Options.force((int)(sceneNode.Position.z + Options.pointSpread), Options.minScreenZ, Options.maxScreenZ));
+              Options.force((int)(sceneNode.Position.z - Options.pointSpread), Options.minZ, Options.maxZ),
+              Options.force((int)(sceneNode.Position.z + Options.pointSpread), Options.minZ, Options.maxZ));
 
             return new Vector3(x, 0, z);
         }

@@ -44,7 +44,7 @@ namespace AntKiller
         {
             counter = 0;
             Color = color;
-            Name = "Colony" + Options.capital(Color.ToString()) + Options.counter++;
+            Name = "Colony" + Options.capital(Color.ToString());
             Home = home;
             stock = Options.antsPerSide * Options.foodPerAntNeed;
             FoodStacks = new List<Vector3>();
