@@ -11,7 +11,7 @@ namespace AntKiller
   /// <summary>
   /// Class that handles all the properties / actions from the Window
   /// </summary>
-  class AntKiller : OgreWindow
+  public class AntKiller : OgreWindow
   {
     public AntKiller()
     {

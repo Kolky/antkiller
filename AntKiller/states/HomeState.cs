@@ -6,93 +6,90 @@ using MogreFramework;
 
 namespace AntKiller
 {
-  class HomeState : State
-  {
-    #region Properties
-    private Mission mission;
-    public Mission Mission
+    class HomeState : State
     {
-      get { return mission; }
-      set { mission = value; }
-    }
-    #endregion
+        #region Properties
+        public Mission Mission { get; private set; }
+        #endregion
 
-    public HomeState(Ant ant, Mission mission)
-      : base(ant)
-    {
-      this.Mission = mission;
-
-      this.Ant.resetMovement();
-      this.Destination = this.Ant.Colony.Home;
-
-      if (this.Ant.CurrentAnimation != AntAnimations.WALK
-        || this.Ant.CurrentAnimationState == null
-        || !this.Ant.CurrentAnimationState.Enabled)
-        this.Ant.startAnimation(AntAnimations.WALK, true);
-
-      switch (this.Mission.MissionType)
-      {
-        case MissionType.ENEMY_KILLED:
-          this.Ant.Sphere.SetMaterialName("SphereBrown");
-          break;
-        case MissionType.NOTHING_FOUND:
-          this.Ant.Sphere.SetMaterialName("SphereOrange");
-          break;
-        case MissionType.FOOD_FOUND:
-          this.Ant.Sphere.SetMaterialName("SphereGreen");
-          break;
-        case MissionType.FOOD_RETURN:
-          this.Ant.Sphere.SetMaterialName("SphereGreen");
-          break;
-        case MissionType.LAST_FOOD:
-          this.Ant.Sphere.SetMaterialName("SphereGreen");
-          break;
-        case MissionType.FOOD_EMPTY:
-          this.Ant.Sphere.SetMaterialName("SphereOrange");
-          break;
-      }      
-
-      //Console.WriteLine(this.Ant.Name + " HomeState Mission: " + Options.capital(mission.MissionType.ToString()));
-    }
-
-    public override void Update(FrameEvent evt)
-    {
-      float distance = this.Ant.moteToDestination(evt, this.Destination);
-
-      if (distance <= 0.0f)
-      {
-        // Save mission data to colony
-        switch (this.Mission.MissionType)
+        public HomeState(Ant ant, Mission mission)
+            : base(ant)
         {
-          case MissionType.ENEMY_KILLED:
-            this.Ant.Health = Options.health + (int)(this.Ant.Rank * Options.healthRankBonus);
-            break;
-          case MissionType.NOTHING_FOUND:
-            break;
-          case MissionType.FOOD_FOUND:
-            if (!this.Ant.Colony.FoodStacks.Contains(this.Mission.Position))
-              this.Ant.Colony.FoodStacks.Add(this.Mission.Position);            
-            this.Ant.Colony.Stock++;
-            break;
-          case MissionType.FOOD_RETURN:
-            this.Ant.Colony.Foodcheck--;
-            this.Ant.Colony.Stock++;
-            break;
-          case MissionType.LAST_FOOD:
-            if (this.Ant.Colony.FoodStacks.Contains(this.Mission.Position))
-              this.Ant.Colony.FoodStacks.Remove(this.Mission.Position);
-            this.Ant.Colony.Foodcheck--;
-            break;
-          case MissionType.FOOD_EMPTY:
-            if (this.Ant.Colony.FoodStacks.Contains(this.Mission.Position))
-              this.Ant.Colony.FoodStacks.Remove(this.Mission.Position);
-            this.Ant.Colony.Foodcheck--;
-            break;
+            Mission = mission;
+
+            Ant.resetMovement();
+            Destination = Ant.Colony.Home;
+
+            if (Ant.CurrentAnimation != AntAnimations.WALK ||
+                Ant.CurrentAnimationState == null ||
+                !Ant.CurrentAnimationState.Enabled)
+            {
+                Ant.startAnimation(AntAnimations.WALK, true);
+            }
+
+            switch (Mission.MissionType)
+            {
+                case MissionType.ENEMY_KILLED:
+                    Ant.Sphere.SetMaterialName("SphereBrown");
+                    break;
+                case MissionType.NOTHING_FOUND:
+                    Ant.Sphere.SetMaterialName("SphereOrange");
+                    break;
+                case MissionType.FOOD_FOUND:
+                    Ant.Sphere.SetMaterialName("SphereGreen");
+                    break;
+                case MissionType.FOOD_RETURN:
+                    Ant.Sphere.SetMaterialName("SphereGreen");
+                    break;
+                case MissionType.LAST_FOOD:
+                    Ant.Sphere.SetMaterialName("SphereGreen");
+                    break;
+                case MissionType.FOOD_EMPTY:
+                    Ant.Sphere.SetMaterialName("SphereOrange");
+                    break;
+            }
+
+            //Console.WriteLine(Ant.Name + " HomeState Mission: " + Options.capital(mission.MissionType.ToString()));
         }
 
-        // Assign new assignment!
-        this.Ant.CurrentState = this.Ant.Colony.newAssignment(this.Ant);
-      }
+        public override void Update(FrameEvent evt)
+        {
+            float distance = Ant.moteToDestination(evt, Destination);
+
+            if (distance <= 0.0f)
+            {
+                // Save mission data to colony
+                switch (Mission.MissionType)
+                {
+                    case MissionType.ENEMY_KILLED:
+                        Ant.Health = Options.health + (int)(Ant.Rank * Options.healthRankBonus);
+                        break;
+                    case MissionType.NOTHING_FOUND:
+                        break;
+                    case MissionType.FOOD_FOUND:
+                        if (!Ant.Colony.FoodStacks.Contains(Mission.Position))
+                            Ant.Colony.FoodStacks.Add(Mission.Position);
+                        Ant.Colony.Stock++;
+                        break;
+                    case MissionType.FOOD_RETURN:
+                        Ant.Colony.Foodcheck--;
+                        Ant.Colony.Stock++;
+                        break;
+                    case MissionType.LAST_FOOD:
+                        if (Ant.Colony.FoodStacks.Contains(Mission.Position))
+                            Ant.Colony.FoodStacks.Remove(Mission.Position);
+                        Ant.Colony.Foodcheck--;
+                        break;
+                    case MissionType.FOOD_EMPTY:
+                        if (Ant.Colony.FoodStacks.Contains(Mission.Position))
+                            Ant.Colony.FoodStacks.Remove(Mission.Position);
+                        Ant.Colony.Foodcheck--;
+                        break;
+                }
+
+                // Assign new assignment!
+                Ant.CurrentState = Ant.Colony.newAssignment(Ant);
+            }
+        }
     }
-  }
 }

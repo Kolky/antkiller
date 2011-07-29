@@ -6,57 +6,59 @@ using MogreFramework;
 
 namespace AntKiller
 {
-	class SearchState : State
-  {
-    #region Properties
-    private int count;
-    #endregion
-
-    public SearchState(Ant ant)
-			: base(ant)
-		{
-      this.Destination = this.randomDestination(this.Ant.SceneNode);
-
-      if (this.Ant.CurrentAnimation != AntAnimations.WALK
-        || this.Ant.CurrentAnimationState == null
-        || !this.Ant.CurrentAnimationState.Enabled)
-        this.Ant.startAnimation(AntAnimations.WALK, true);
-
-      this.Ant.Sphere.SetMaterialName("SphereBlue");
-
-      //Console.WriteLine(this.Ant.Name + " SearchState Destination: " + this.Destination.ToString());
-		}
-
-		public override void Update(FrameEvent evt)
-		{
-			float distance = this.Ant.moteToDestination(evt, this.Destination);
-
-			if (distance <= 0.0f)
-			{
-        if (this.count < 3)
-        {
-          // Try another direction
-          this.Destination = this.randomDestination(this.Ant.SceneNode);
-          this.count++;
-        }
-        else
-        {
-          // Nothing found, go back home for new assignment
-          this.Ant.CurrentState = new BackState(this.Ant);
-        }
-			}
-		}    
-
-    private Vector3 randomDestination(SceneNode sceneNode)
+    class SearchState : State
     {
-      int x = Options.random.Next(
-        Options.force((int)(sceneNode.Position.x - Options.pointSpread), 20, 1480),
-        Options.force((int)(sceneNode.Position.x + Options.pointSpread), 20, 1480));
-      int z = Options.random.Next(
-        Options.force((int)(sceneNode.Position.z - Options.pointSpread), 20, 1480),
-        Options.force((int)(sceneNode.Position.z + Options.pointSpread), 20, 1480));
+        #region Properties
+        private int count;
+        #endregion
 
-      return new Vector3(x, 0, z);
+        public SearchState(Ant ant)
+            : base(ant)
+        {
+            Destination = randomDestination(Ant.SceneNode);
+
+            if (Ant.CurrentAnimation != AntAnimations.WALK ||
+                Ant.CurrentAnimationState == null ||
+                !Ant.CurrentAnimationState.Enabled)
+            {
+                Ant.startAnimation(AntAnimations.WALK, true);
+            }
+
+            Ant.Sphere.SetMaterialName("SphereBlue");
+
+            //Console.WriteLine(Ant.Name + " SearchState Destination: " + Destination.ToString());
+        }
+
+        public override void Update(FrameEvent evt)
+        {
+            float distance = Ant.moteToDestination(evt, Destination);
+
+            if (distance <= 0.0f)
+            {
+                if (count < 3)
+                {
+                    // Try another direction
+                    Destination = randomDestination(Ant.SceneNode);
+                    count++;
+                }
+                else
+                {
+                    // Nothing found, go back home for new assignment
+                    Ant.CurrentState = new BackState(Ant);
+                }
+            }
+        }
+
+        private Vector3 randomDestination(SceneNode sceneNode)
+        {
+            int x = Options.random.Next(
+              Options.force((int)(sceneNode.Position.x - Options.pointSpread), 20, 1480),
+              Options.force((int)(sceneNode.Position.x + Options.pointSpread), 20, 1480));
+            int z = Options.random.Next(
+              Options.force((int)(sceneNode.Position.z - Options.pointSpread), 20, 1480),
+              Options.force((int)(sceneNode.Position.z + Options.pointSpread), 20, 1480));
+
+            return new Vector3(x, 0, z);
+        }
     }
-	}
 }

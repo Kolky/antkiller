@@ -6,32 +6,31 @@ using MogreFramework;
 
 namespace AntKiller
 {
-  class ExplodeState : State
-  {
-    #region Properties
-    private float time = 0.0f;
-    #endregion
-
-    public ExplodeState(Ant ant)
-      : base(ant)
+    class ExplodeState : State
     {
-      if (this.Ant.CurrentAnimation != AntAnimations.EXPLODE
-        || this.Ant.CurrentAnimationState == null
-        || !this.Ant.CurrentAnimationState.Enabled)
-        this.Ant.startAnimation(AntAnimations.EXPLODE, true);
+        public ExplodeState(Ant ant)
+            : base(ant)
+        {
+            if (Ant.CurrentAnimation != AntAnimations.EXPLODE || 
+                Ant.CurrentAnimationState == null ||
+                !Ant.CurrentAnimationState.Enabled)
+            {
+                Ant.startAnimation(AntAnimations.EXPLODE, false);
+            }
 
-      this.Ant.Sphere.SetMaterialName("SpherePurple");
+            Ant.Sphere.SetMaterialName("SpherePurple");
 
-      //Console.WriteLine(this.Ant.Name + " ExplodeState");
+            //Console.WriteLine(Ant.Name + " ExplodeState");
+        }
+
+        public override void Update(FrameEvent evt)
+        {
+            if (Ant.CurrentAnimationState != null &&
+                Ant.CurrentAnimationState.HasEnded)
+            {
+                AntBuilder.ToBeRemoved.Add(Ant);
+            }
+        }
     }
-
-    public override void Update(FrameEvent evt)
-    {
-      time += evt.timeSinceLastFrame;
-
-      //if (this.CurrentState.GetType() == typeof(ExplodeState) && this.CurrentAnimationState.HasEnded)
-      if (time >= 1.0f)
-        AntBuilder.ToBeRemoved.Add(this.Ant);
-    }
-  }
 }
+        

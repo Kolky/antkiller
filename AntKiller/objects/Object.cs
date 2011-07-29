@@ -6,87 +6,73 @@ using MogreFramework;
 
 namespace AntKiller
 {
-  abstract class Object
-  {
-    #region Properties    
-    private RaySceneQuery raySceneQuery;   
-
-    protected OgreWindow win;
-    public OgreWindow Win
+    abstract class Object
     {
-      get { return win; }
-    }
+        #region Properties
+        private RaySceneQuery raySceneQuery;
+        public OgreWindow Win { get; private set; }
+        public int ID { get; protected set; }
+        public String Name { get; protected set; }
+        public Entity Entity { get; protected set; }
+        public SceneNode SceneNode { get; private set; }
+        #endregion
 
-    protected int id;
-    public int ID
-    {
-      get { return id; }
-    }
-
-    protected String name;
-    public String Name
-    {
-      get { return name; }
-    }
-
-    protected Entity entity;
-    public Entity Entity
-    {
-      get { return entity; }
-    }
-
-    private SceneNode sceneNode;
-    public SceneNode SceneNode
-    {
-      get { return sceneNode; }
-    }    
-    #endregion
-
-    public Object(OgreWindow win, SceneNode sceneNode)
-    {
-      this.win = win;
-      this.sceneNode = sceneNode;
-      this.raySceneQuery = this.win.SceneManager.CreateRayQuery(new Ray());      
-    }
-
-    #region Update Methods
-    private void UpdateHeight()
-    {
-      Vector3 rOrigin = new Vector3(this.SceneNode.Position.x, 1000.0f, this.SceneNode.Position.z);
-      Vector3 rDirection = Vector3.NEGATIVE_UNIT_Y;
-
-      this.raySceneQuery.Ray = new Ray(rOrigin, rDirection);
-
-      RaySceneQueryResult result = this.raySceneQuery.Execute();
-      foreach (RaySceneQueryResultEntry entry in result)
-      {
-        if (entry.worldFragment != null)
+        public Object(OgreWindow win, SceneNode sceneNode)
         {
-          this.SceneNode.Position = entry.worldFragment.singleIntersection;
+            Win = win;
+            SceneNode = sceneNode;
+            raySceneQuery = Win.SceneManager.CreateRayQuery(new Ray());
         }
-      }
+
+        #region Update Methods
+        private void UpdateHeight()
+        {
+            Vector3 rOrigin = new Vector3(SceneNode.Position.x, 1000.0f, SceneNode.Position.z);
+            Vector3 rDirection = Vector3.NEGATIVE_UNIT_Y;
+
+            raySceneQuery.Ray = new Ray(rOrigin, rDirection);
+
+            RaySceneQueryResult result = raySceneQuery.Execute();
+            foreach (RaySceneQueryResultEntry entry in result)
+            {
+                if (entry.worldFragment != null)
+                {
+                    SceneNode.Position = entry.worldFragment.singleIntersection;
+                }
+            }
+        }
+
+        private void UpdateBorder()
+        {
+            if (SceneNode.Position.x > Options.maxX)
+                SceneNode.Position = new Vector3(Options.maxX, SceneNode.Position.y, SceneNode.Position.z);
+
+            if (SceneNode.Position.x < Options.minX)
+                SceneNode.Position = new Vector3(Options.minX, SceneNode.Position.y, SceneNode.Position.z);
+
+            if (SceneNode.Position.z > Options.maxZ)
+                SceneNode.Position = new Vector3(SceneNode.Position.x, SceneNode.Position.y, Options.maxZ);
+
+            if (SceneNode.Position.z < Options.minZ)
+                SceneNode.Position = new Vector3(SceneNode.Position.x, SceneNode.Position.y, Options.minZ);
+        }
+
+        public virtual void Update(FrameEvent evt)
+        {
+            UpdateHeight();
+            UpdateBorder();
+        }
+
+        public virtual void Detach()
+        {
+            SceneNode.DetachObject(Entity);
+        }
+
+        public virtual void Destroy()
+        {
+            Win.SceneManager.DestroyEntity(Entity);
+            Win.SceneManager.DestroySceneNode(SceneNode);
+        }
+        #endregion
     }
-
-    private void UpdateBorder()
-    {
-      if (this.SceneNode.Position.x > Options.maxX)
-        this.SceneNode.Position = new Vector3(Options.maxX, this.SceneNode.Position.y, this.SceneNode.Position.z);
-
-      if (this.SceneNode.Position.x < Options.minX)
-        this.SceneNode.Position = new Vector3(Options.minX, this.SceneNode.Position.y, this.SceneNode.Position.z);
-
-      if (this.SceneNode.Position.z > Options.maxZ)
-        this.SceneNode.Position = new Vector3(this.SceneNode.Position.x, this.SceneNode.Position.y, Options.maxZ);
-
-      if (this.SceneNode.Position.z < Options.minZ)
-        this.SceneNode.Position = new Vector3(this.SceneNode.Position.x, this.SceneNode.Position.y, Options.minZ);
-    }
-
-    public virtual void Update(FrameEvent evt)
-    {
-      this.UpdateHeight();
-      this.UpdateBorder();
-    }
-    #endregion
-  }
 }

@@ -6,31 +6,33 @@ using MogreFramework;
 
 namespace AntKiller
 {
-  class BackState : State
-  {
-    public BackState(Ant ant)
-      : base(ant)
+    class BackState : State
     {
-      this.Destination = this.Ant.Colony.Home;
+        public BackState(Ant ant)
+            : base(ant)
+        {
+            Destination = Ant.Colony.Home;
 
-      if (this.Ant.CurrentAnimation != AntAnimations.WALK
-        || this.Ant.CurrentAnimationState == null
-        || !this.Ant.CurrentAnimationState.Enabled)
-        this.Ant.startAnimation(AntAnimations.WALK, true);
+            if (Ant.CurrentAnimation != AntAnimations.WALK ||
+                Ant.CurrentAnimationState == null ||
+                !Ant.CurrentAnimationState.Enabled)
+            {
+                Ant.startAnimation(AntAnimations.WALK, true);
+            }
 
-      this.Ant.Sphere.SetMaterialName("SphereOrange");
+            Ant.Sphere.SetMaterialName("SphereOrange");
 
-      //Console.WriteLine(this.Ant.Name + " BackState");
+            //Console.WriteLine(Ant.Name + " BackState");
+        }
+
+        public override void Update(FrameEvent evt)
+        {
+            float distance = Ant.moteToDestination(evt, Destination);
+
+            if (distance <= 0.0f)
+            {
+                Ant.CurrentState = Ant.Colony.newAssignment(Ant);
+            }
+        }
     }
-
-    public override void Update(FrameEvent evt)
-    {
-      float distance = this.Ant.moteToDestination(evt, this.Destination);
-
-      if (distance <= 0.0f)
-      {
-        this.Ant.CurrentState = this.Ant.Colony.newAssignment(this.Ant);
-      }
-    }
-  }
 }
