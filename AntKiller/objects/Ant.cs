@@ -12,6 +12,7 @@ namespace AntKiller
         BLACK,
         RED
     };
+
     public enum AntAnimations
     {
         WALK,

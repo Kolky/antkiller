@@ -60,16 +60,13 @@ namespace AntKiller
             if (FoodStacks.Count > 0)
             {
                 var closestFoodStack = FoodStacks
-                    .OrderBy(x => new Vector3(Home.x - x.Value.x, 0, Home.z - x.Value.z).Normalise())
+                    .OrderBy(x => new Vector3(Home.x - x.Value.x, Home.y - x.Value.y, 0).SquaredLength)
                     .First();
 
                 // Not everyone should get food, always people need to search
-
                 int gatheringAnts = AntBuilder.Objects
-                    .Where(x => x.GetType() == typeof(Ant))
-                    .Cast<Ant>()
-                    .Where(x => x.Colony == this && x.CurrentState.GetType() == typeof(FoodState))
-                    .Count();
+                                              .Cast<Ant>()
+                                              .Count<Ant>(x => x.Colony == this && x.CurrentState.GetType() == typeof(FoodState));
                 if (gatheringAnts < (int)System.Math.Ceiling(counter * Options.getFoodPercentage))
                 {
                     return new FoodState(ant, closestFoodStack.Key, closestFoodStack.Value);

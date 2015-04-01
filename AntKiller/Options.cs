@@ -12,8 +12,8 @@ namespace AntKiller
         public const int foodPieces = 18;
 
         // Map
-        public const int screenX = 1600;
-        public const int screenZ = 1200;
+        public const int screenX = 3200;
+        public const int screenZ = 2400;
         public const int cameraY = 1500;
 
         // Object
